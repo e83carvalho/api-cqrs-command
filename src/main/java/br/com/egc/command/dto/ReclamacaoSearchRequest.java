@@ -14,9 +14,9 @@ import javax.validation.constraints.NotBlank;
 public class ReclamacaoSearchRequest {
 
     @NotBlank
-    private String uuidCliente;
+    private String codigoReclamacao;
 
-    private String codigoPedido;
+
 
 
 }

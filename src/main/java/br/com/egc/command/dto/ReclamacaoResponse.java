@@ -5,19 +5,23 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 public class ReclamacaoResponse {
 
-    private String uuidReclamacao;
+    private String codigoReclamacao;
 
-    private String uuidCliente;
+    private String codigoCliente;
 
     private String codigoPedido;
 
     private String descricao;
 
     private String status;
+
+    private List<String> files;
 }
