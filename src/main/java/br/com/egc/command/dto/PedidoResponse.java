@@ -5,23 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ReclamacaoResponse {
-
-    private String codigoReclamacao;
-
-    private String codigoCliente;
+public class PedidoResponse {
 
     private String codigoPedido;
 
-    private String descricao;
+    private String codigoCliente;
 
     private String status;
 
-    private List<String> imagens;
 }

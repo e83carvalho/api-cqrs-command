@@ -53,9 +53,11 @@ public class ReclamacaoController {
     }
 
     @PostMapping("/{codigoReclamacao}/imagens")
-    public void adicionarImagens(@PathVariable String codigoReclamacao,
-                                 @RequestParam("imagens") List<MultipartFile> imagens) throws IOException {
-        reclamacaoService.adicionarImagens(codigoReclamacao, imagens);
+    public ResponseEntity<ReclamacaoResponse> adicionarImagens(@PathVariable String codigoReclamacao,
+                                                               @RequestParam("imagens") List<MultipartFile> imagens) throws IOException {
+        return ResponseEntity.ok(
+                reclamacaoConverter.toReclamacaoResponse(
+                        reclamacaoService.adicionarImagens(codigoReclamacao, imagens)));
     }
 
     @DeleteMapping("/{codigoReclamacao}/imagens/{nomeArquivo}")
@@ -67,8 +69,8 @@ public class ReclamacaoController {
     public ResponseEntity<?> buscarImagens(@PathVariable String codigoReclamacao, @PathVariable String nomeArquivo) throws IOException {
         return ResponseEntity
                 .status(HttpStatus.FOUND)
-                .header(HttpHeaders.LOCATION,reclamacaoService.buscarImagens(codigoReclamacao, nomeArquivo))
-                .build() ;
+                .header(HttpHeaders.LOCATION, reclamacaoService.buscarImagens(codigoReclamacao, nomeArquivo))
+                .build();
     }
 
 }

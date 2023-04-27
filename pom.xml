@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>br.com.egc</groupId>
-    <artifactId>api-cqrs-aws-command</artifactId>
+    <artifactId>api-cqrs-command</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>cqrs-aws-command</name>
+    <name>api-cqrs-command</name>
     <description>Projeto Spring Boot utilizando o padrão CQRS com integração ao DynamoDB e ao Amazon S3 da AWS para
         implementação do lado de comando (Command) do sistema, incluindo a capacidade de armazenar imagens.
     </description>

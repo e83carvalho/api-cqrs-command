@@ -1,6 +1,7 @@
 package br.com.egc.command.service;
 
 import br.com.egc.command.model.Reclamacao;
+import br.com.egc.command.repository.PedidoRepository;
 import br.com.egc.command.repository.ReclamacaoRepository;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -26,13 +27,33 @@ public class ReclamacaoService {
 
     private final ReclamacaoRepository reclamacaoRepository;
 
+    private final PedidoRepository pedidoRepository;
+
     private final AmazonS3 s3Client;
     @Value("${aws.s3.bucketname}")
     private String bucketName;
 
     public Reclamacao salvarReclamacao(Reclamacao reclamacao) {
+
+        var pedido = pedidoRepository.findByCodigoPedido(reclamacao.getCodigoPedido());
+
+        if (pedido == null) {
+            throw new RuntimeException("Pedido não localizado");
+        }
+
+        if (!pedido.getCodigoCliente().equals(reclamacao.getCodigoCliente())) {
+            throw new RuntimeException("Pedido não pertence ao cliente informado");
+        }
+
         reclamacao.setStatus("ABERTO");
         reclamacaoRepository.save(reclamacao);
+
+        if (pedido.getCodigoReclamacoes() == null) {
+            pedido.setCodigoReclamacoes(new ArrayList<>());
+        }
+        pedido.getCodigoReclamacoes().add(reclamacao.getCodigoReclamacao());
+        pedidoRepository.update(reclamacao.getCodigoPedido(), pedido);
+
         return reclamacao;
     }
 
@@ -47,14 +68,14 @@ public class ReclamacaoService {
         return reclamacao;
     }
 
-    public void adicionarImagens(String codigoReclamacao, List<MultipartFile> imagens) throws IOException {
+    public Reclamacao adicionarImagens(String codigoReclamacao, List<MultipartFile> imagens) throws IOException {
 
         var reclamacao = buscarReclamacao(codigoReclamacao);
 
-        if (reclamacao.getFiles() == null) {
-            reclamacao.setFiles(new ArrayList<>());
+        if (reclamacao.getImagens() == null) {
+            reclamacao.setImagens(new ArrayList<>());
         }
-        var totalImagens = imagens.size() + reclamacao.getFiles().size();
+        var totalImagens = imagens.size() + reclamacao.getImagens().size();
 
         if (totalImagens > 5) {
             throw new RuntimeException("Limite máximo de 5 imagens excedido");
@@ -78,15 +99,17 @@ public class ReclamacaoService {
             var putObjectRequest = new PutObjectRequest(bucketName, "reclamacao/" + key, new ByteArrayInputStream(conteudo), metadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead);
 
-
             s3Client.putObject(putObjectRequest);
 
-            reclamacao.getFiles().add(key);
+            var url = s3Client.getUrl(bucketName, "reclamacao/" + key);
 
-            reclamacaoRepository.save(reclamacao);
-
+            reclamacao.getImagens().add(url.toString());
 
         }
+
+        reclamacaoRepository.save(reclamacao);
+
+        return reclamacao;
     }
 
     public void removerImagens(String codigoReclamacao, String nomeArquivo) throws RuntimeException {
@@ -94,9 +117,9 @@ public class ReclamacaoService {
 
         var reclamacao = buscarReclamacao(codigoReclamacao);
 
-        if (reclamacao.getFiles().contains(nomeArquivo)) {
+        if (reclamacao.getImagens().contains(nomeArquivo)) {
 
-            reclamacao.getFiles().remove(nomeArquivo);
+            reclamacao.getImagens().remove(nomeArquivo);
 
             String caminhoArquivo = "/reclamacao/" + nomeArquivo;
 
@@ -110,7 +133,7 @@ public class ReclamacaoService {
 
             reclamacaoRepository.save(reclamacao);
 
-        }else{
+        } else {
             throw new RuntimeException("Arquivo não localizado na reclamação");
         }
 
@@ -122,13 +145,13 @@ public class ReclamacaoService {
 
         var reclamacao = buscarReclamacao(codigoReclamacao);
 
-        if (reclamacao.getFiles().contains(nomeArquivo)) {
+        if (reclamacao.getImagens().contains(nomeArquivo)) {
 
             var url = s3Client.getUrl(bucketName, "reclamacao/" + nomeArquivo);
 
             return url.toString();
 
-        }else{
+        } else {
             throw new RuntimeException("Arquivo não localizado na reclamação");
         }
 
