@@ -3,16 +3,12 @@ package br.com.egc.command.controller;
 import br.com.egc.command.converter.ReclamacaoConverter;
 import br.com.egc.command.dto.ReclamacaoRequest;
 import br.com.egc.command.dto.ReclamacaoResponse;
-import br.com.egc.command.dto.ReclamacaoSearchRequest;
 import br.com.egc.command.service.ReclamacaoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,14 +40,6 @@ public class ReclamacaoController {
                                 reclamacaoConverter.toReclamacao(reclamacaoRequest))));
     }
 
-    @GetMapping
-    public ResponseEntity<ReclamacaoResponse> buscarReclamacao(@Valid ReclamacaoSearchRequest reclamacaoSearchRequest) {
-        return ResponseEntity.ok(
-                reclamacaoConverter.toReclamacaoResponse(
-                        reclamacaoService.buscarReclamacao(
-                                reclamacaoSearchRequest.getCodigoReclamacao())));
-    }
-
     @PostMapping("/{codigoReclamacao}/imagens")
     public ResponseEntity<ReclamacaoResponse> adicionarImagens(@PathVariable String codigoReclamacao,
                                                                @RequestParam("imagens") List<MultipartFile> imagens) throws IOException {
@@ -65,12 +53,5 @@ public class ReclamacaoController {
         reclamacaoService.removerImagens(codigoReclamacao, nomeArquivo);
     }
 
-    @GetMapping("/{codigoReclamacao}/imagens/{nomeArquivo}")
-    public ResponseEntity<?> buscarImagens(@PathVariable String codigoReclamacao, @PathVariable String nomeArquivo) throws IOException {
-        return ResponseEntity
-                .status(HttpStatus.FOUND)
-                .header(HttpHeaders.LOCATION, reclamacaoService.buscarImagens(codigoReclamacao, nomeArquivo))
-                .build();
-    }
 
 }
