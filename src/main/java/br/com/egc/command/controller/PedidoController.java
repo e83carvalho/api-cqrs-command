@@ -26,12 +26,12 @@ public class PedidoController {
     private final PedidoConverter pedidoConverter;
 
 
-    @PostMapping()
-    public ResponseEntity<PedidoResponse> adicionarPedido(@Valid @RequestBody PedidoRequest pedidoRequest) {
-        return ResponseEntity.ok(
-                pedidoConverter.toPedidoResponse(
-                        pedidoService.salvar(
-                                pedidoConverter.toPedido(pedidoRequest))));
-    }
+//    @PostMapping()
+//    public ResponseEntity<PedidoResponse> adicionarPedido(@Valid @RequestBody PedidoRequest pedidoRequest) {
+//        return ResponseEntity.ok(
+//                pedidoConverter.toPedidoResponse(
+//                        pedidoService.salvar(
+//                                pedidoConverter.toPedido(pedidoRequest))));
+//    }
 
 }
