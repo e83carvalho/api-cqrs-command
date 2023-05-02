@@ -45,7 +45,7 @@ public class ReclamacaoService {
             throw new RuntimeException("Pedido não pertence ao cliente informado");
         }
 
-        reclamacao.setStatus("ABERTO");
+        reclamacao.setStatusReclamacao("ABERTO");
         reclamacaoRepository.save(reclamacao);
 
         if (pedido.getCodigoReclamacoes() == null) {

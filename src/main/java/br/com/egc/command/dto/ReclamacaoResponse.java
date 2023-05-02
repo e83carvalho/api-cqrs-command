@@ -21,7 +21,7 @@ public class ReclamacaoResponse {
 
     private String descricao;
 
-    private String status;
+    private String statusReclamacao;
 
     private List<String> imagens;
 }

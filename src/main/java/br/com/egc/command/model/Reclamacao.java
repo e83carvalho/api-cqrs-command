@@ -29,7 +29,7 @@ public class Reclamacao {
     @DynamoDBAttribute
     private String descricao;
     @DynamoDBAttribute
-    private String status;
+    private String statusReclamacao;
     @DynamoDBAttribute
     private List<String> imagens;
 
